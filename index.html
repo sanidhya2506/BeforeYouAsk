@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeforeYouAsk. | The Instant Context Link 🔗</title>
+    <style>
+        /* CSS for the Ultimate Minimalist Black & White Aesthetic */
+        :root {
+            --color-bg: #FFFFFF;
+            --color-text: #000000;
+            --color-accent: #000000; 
+            --color-subtle: #EEEEEE; 
+            --font-main: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            --padding-base: 20px; 
+            --padding-desktop: 40px; 
+            --header-line-height: 3px; 
+            --header-block-height: 100px; 
+            --screen-padding-v: 45px; 
+        }
+
+        /* Responsive Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; 
+        }
+
+        /* Full Screen Container Fix */
+        #app-container {
+            width: 100%;
+            padding: var(--padding-base);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        
+        .screen-content-area {
+             padding-top: 0; 
+             padding-bottom: var(--screen-padding-v); 
+        }
+        
+        /* Content Wrapper for readability on large screens */
+        .content-wrapper {
+            max-width: 800px; 
+            width: 100%;
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative; 
+        }
+
+        /* Media Queries for Desktop/Larger Screens */
+        @media (min-width: 768px) {
+            #app-container {
+                padding: var(--padding-desktop);
+            }
+        }
+        
+        /* --- FOOTER STYLES --- */
+        footer {
+             width: 100%;
+             text-align: center;
+             font-size: 0.8em;
+             color: #999;
+             padding: 20px var(--padding-base);
+             border-top: 3px solid var(--color-accent); 
+             margin-top: auto; 
+        }
+        
+        @media (min-width: 768px) {
+            footer {
+                padding: 20px var(--padding-desktop);
+            }
+        }
+        
+        /* HEART PUMP ANIMATION */
+        .heart-pulse {
+            display: inline-block;
+            color: #FF0000; 
+            animation: heartBeat 1.2s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); opacity: 0.9; }
+            25% { transform: scale(1.15); opacity: 1; }
+            50% { transform: scale(1); opacity: 0.9; }
+            75% { transform: scale(1.08); opacity: 0.95; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Utility Classes */
+        .screen {
+            display: none;
+            width: 100%;
+            flex-grow: 1;
+            position: absolute; 
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: static; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* HEADER STYLES (INTRO/QUESTION SCREENS) */
+        h1.main-title {
+            font-weight: 900;
+            /* Max aggressive scaling */
+            font-size: clamp(1.8em, 6vw, 4em); 
+            text-transform: uppercase;
+            color: var(--color-accent);
+            letter-spacing: 0px; /* Eliminate negative letter spacing */
+            text-align: center; 
+            line-height: 1.05; 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            /* Reduce horizontal padding to make room for text */
+            padding-left: 5px !important; 
+            padding-right: 5px !important;
+            
+            /* CRITICAL OVERFLOW FIXES */
+            white-space: nowrap; /* Prevent wrapping */
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            min-width: 0; 
+        }
+        
+        .header-block {
+             position: relative; 
+             height: var(--header-block-height); 
+             display: flex; 
+             align-items: center; 
+             justify-content: center; 
+             padding-top: 0; 
+             padding-bottom: 0; 
+        }
+        
+        .header-block::after {
+             content: "";
+             display: block;
+             height: var(--header-line-height);
+             background-color: var(--color-accent); 
+             position: absolute;
+             bottom: 0;
+             left: 50%; 
+             transform: translateX(-50%); 
+             width: 100vw; 
+             max-width: none;
+        }
+        
+        @media (max-width: 800px) {
+             .header-block::after {
+                 left: var(--padding-base);
+                 right: var(--padding-base);
+                 width: auto;
+                 margin-left: calc(-1 * var(--padding-base));
+                 margin-right: calc(-1 * var(--padding-base));
+                 transform: none;
+             }
+        }
+        
+        /* Sub-Header */
+        h2.sub-title {
+            font-size: clamp(1.5em, 4vw, 2.2em);
+            color: var(--color-text);
+            margin-top: 25px; 
+            margin-bottom: 25px; 
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        h2 {
+             font-size: clamp(1.5em, 4vw, 2.2em);
+             color: var(--color-text);
+             margin-bottom: 25px;
+             font-weight: 700;
+        }
+
+        /* Intro Copy Spacing */
+        #intro-screen p {
+            margin-bottom: 25px; 
+            font-size: 1.15em;
+            color: #444;
+        }
+        
+        blockquote {
+            font-style: italic;
+            border-left: 3px solid var(--color-accent);
+            padding-left: 15px;
+            margin: 15px 0 30px 0; 
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .highlight {
+            color: var(--color-accent);
+            font-weight: 700;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 1px solid var(--color-subtle);
+            border-bottom: 1px solid var(--color-subtle);
+        }
+
+        .stat-item strong {
+            display: block;
+            font-size: 2.8em;
+            font-weight: 900;
+            color: var(--color-accent);
+            line-height: 1;
+        }
+        .stat-item span {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #777;
+        }
+
+        /* Button Styling */
+        .btn {
+            background-color: var(--color-accent);
+            color: var(--color-bg);
+            border: 2px solid var(--color-accent);
+            padding: 18px 25px;
+            font-size: 1.1em;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background-color: #333333;
+            transform: translateY(-2px);
+        }
+
+        .btn-text {
+            color: var(--color-text) !important;
+            background-color: var(--color-bg) !important;
+            border: 2px solid var(--color-accent);
+        }
+        .btn-text:hover {
+            background-color: var(--color-subtle) !important;
+        }
+
+        .btn-back {
+            background-color: var(--color-subtle) !important;
+            color: var(--color-text) !important;
+            border: 2px solid var(--color-subtle);
+        }
+
+        .btn:disabled {
+            background-color: #F0F0F0;
+            color: #AAAAAA;
+            cursor: not-allowed;
+            transform: none;
+            border: 2px solid #DDDDDD;
+        }
+        
+        /* Question Navigation */
+        .question-nav {
+            margin-top: 40px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .question-nav .btn-back {
+            flex-grow: 0;
+            width: 110px; 
+            padding: 15px 0;
+            font-size: 1em;
+        }
+        .question-nav .btn {
+            flex-grow: 1;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 6px;
+            background-color: var(--color-subtle);
+            margin-bottom: 20px;
+            border-radius: 3px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--color-accent);
+            width: 0%;
+            transition: width 0.3s ease-out;
+            border-radius: 3px;
+        }
+
+        /* Inputs and Choices */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--color-bg);
+            border: 2px solid var(--color-accent);
+            color: var(--color-text);
+            font-size: 1.1em;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            caret-color: var(--color-accent);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        .choice-options label {
+            display: block;
+            background-color: var(--color-subtle);
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            font-size: 1.1em;
+        }
+        
+        .choice-options input[type="radio"]:checked + span {
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+        
+        .choice-options input[type="radio"]:checked {
+            accent-color: var(--color-accent);
+        }
+        
+        .choice-options label:has(input[type="radio"]:checked) {
+             background-color: #E0E0E0;
+             border-color: var(--color-accent);
+        }
+
+
+        /* Final Card Styling */
+        #card-preview-container {
+             background-color: var(--color-bg); 
+             padding: 40px 30px; 
+             border-radius: 15px;
+             margin-bottom: 30px;
+             min-height: 580px; 
+             display: flex;
+             flex-direction: column;
+             justify-content: space-between;
+             border: 3px solid var(--color-accent);
+             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+             word-wrap: break-word; 
+             overflow: hidden; 
+             position: relative; 
+        }
+        
+        .card-header-top {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--color-subtle);
+            padding-bottom: 10px;
+        }
+        
+        /* CRITICAL FIX: Ensure the title on the final card also never wraps */
+        .card-title-main {
+            color: var(--color-accent);
+            /* EXTREME SCALING: Set minimum size to 1.7em */
+            font-size: clamp(1.7em, 5vw, 3.2em); 
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1;
+            /* CRITICAL FIXES APPLIED HERE: */
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0px; /* Eliminate negative spacing */
+            padding: 0 5px; /* Added small horizontal padding inside the card */
+        }
+        
+        .card-item {
+            margin-bottom: 6px;
+            padding: 12px 0; 
+            border-bottom: 1px dashed #DDDDDD; 
+        }
+        
+        .card-item span {
+            display: block;
+            font-size: 1.05em;
+            font-weight: 500;
+            color: var(--color-text);
+            word-break: break-word; 
+            white-space: normal;
+        }
+
+        .card-item strong {
+            display: block;
+            font-size: 0.8em;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+        
+        .card-footer-timestamp {
+            text-align: right; 
+            font-size: 0.75em;
+            color: #AAAAAA;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+        
+        /* Temporary Success Screen */
+        #success-screen {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--color-accent);
+            flex-grow: 1;
+            padding: 50px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+</head>
+<body>
+
+<div id="app-container">
+    <div class="content-wrapper">
+        
+        <div id="intro-screen" class="screen active">
+            <div class="screen-content-area">
+                <div class="header-block">
+                    <h1 class="main-title">BeforeYouAsk.</h1>
+                </div> 
+                <h2 class="sub-title">Your Context Cheatsheet</h2>
+
+                <p>
+                    <span class="highlight">The Instant Context Link</span><br>
+                    Let’s be honest: You don't have the <strong>mental bandwidth</strong> for the cringe "Tell me about yourself" starter pack. Why waste time re-explaining your whole vibe when you could be connecting?
+                </p>
+
+                <blockquote>
+                    <span class="highlight">The Small Talk NPC Dialogue:</span><br>
+                    "Where are you <em>actually</em> from?"<br>
+                    "What's your job title?"<br>
+                    "Where'd you go to school?"
+                </blockquote>
+
+                <p> 
+                    This isn't just about efficiency; it's about <strong>maintaining the aesthetic.</strong> Nobody wants to look <strong>clueless</strong> trying to catch up on your life timeline. Your BeforeYouAsk link is the ultimate social <strong>patch note.</strong> You drop it, they read it, and suddenly, they're not asking about your hometown—they're asking about your hot take on the latest episode. <strong>No cap, this is essential.</strong>
+                </p>
+
+                <p>
+                    <strong>The Unsolicited Flex:</strong> Create one single, shareable profile that locks in your essential 9 facts. <strong>Drop the link</strong>, let them get the <strong>TLDR</strong> on your life, and jump straight to the conversation that actually matters. <span class="highlight">We're starting on Chapter 2.</span>
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-item"><strong>9</strong><span>Facts Locked</span></div>
+                    <div class="stat-item"><strong>1</strong><span>Vibe Check Link</span></div>
+                    <div class="stat-item"><strong>30</strong><span>Seconds Setup</span></div>
+                </div>
+
+                <button class="btn" id="start-quiz-btn">
+                    LAUNCH INTRO PROTOCOL. 🔗
+                </button>
+            </div>
+        </div> 
+        
+        <div id="question-screen" class="screen">
+            <div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                
+                <div class="timer-text" id="timer-text"></div>
+                
+                <div class="question-text" id="question-text"></div>
+                
+                <div id="answer-area">
+                    </div>
+            </div>
+            
+            <div class="question-nav">
+                <button class="btn btn-back" id="back-question-btn" disabled>
+                    ← Back
+                </button>
+                <button class="btn" id="next-question-btn" disabled>
+                    Next →
+                </button>
+            </div>
+        </div>
+        
+        <div id="success-screen" class="screen">
+            Deploying Intro Context...
+        </div>
+
+        <div id="final-card-screen" class="screen">
+            <div class="screen-content-area">
+                <div class="header-block">
+                    <h1 class="main-title">BeforeYouAsk.</h1>
+                </div>
+
+                <h2 class="sub-title" style="text-align: left; margin-top: 25px;">Your Link is Live. Go Connect.</h2>
+                <p style="margin-bottom: 20px; color: #118811; font-weight: 700; font-size: 1.1em;">
+                    <span class="highlight">Launch Successful.</span> Your Instant Context card is ready to share.
+                </p>
+                <p style="margin-bottom: 20px; color: #555; font-size: 0.9em;">
+                    1. **Screenshot** the Card below to share on Instagram/Stories.<br>
+                    2. Copy the unique link to send in DMs or bios.
+                </p>
+                
+                <div id="card-preview-container">
+                    </div>
+            </div>
+            
+            <div class="question-nav">
+                <button class="btn btn-text" id="download-card-btn" style="width: 100%;">
+                    Download Intro Image ⬇️
+                </button>
+                <button class="btn" id="copy-link-btn" style="width: 100%;">
+                    Copy Confidence Link 🔗
+                </button>
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+<footer>
+    BeforeYouAsk. &copy; 2026<br>
+ Built with <span class="heart-pulse">❤️</span> by Sanidhya 
+</footer>
+
+<script>
+    // --- Data Model (Unchanged) ---
+    const questions = [
+        { id: 'q1', label: 'Current IRL Quest', text: "What's your current irl quest (job/passion/side-hustle)?", type: 'text', placeholder: 'Student / Freelance Creator / 9-5 & Coder on the side...' },
+        { id: 'q2', label: 'Where I’m From-From', text: "Where are you truly from?", type: 'text', placeholder: 'Born in Mumbai, grew up in Dubai, now in Toronto.' },
+        { id: 'q3', label: 'My Vibe/Aesthetic', text: "Your vibe/aesthetic is best described as:", type: 'choice', options: ['Main Character Energy', 'NPC, but a fun one', 'Total Chaos, but organized', 'Trying my best, tbh'] },
+        { id: 'q4', label: 'Current Obsession', text: "What's the one thing you are obsessed with right now?", type: 'text', placeholder: 'Learning Spanish / My new Espresso machine / That one K-Drama.' },
+        { id: 'q5', label: 'My Theme Song', text: "Your current theme song or what you listen to on loop:", type: 'text', placeholder: 'Artist - Track Name, or a link to the track.' },
+        { id: 'q6', label: 'The Education Flex', text: "What are you actually studying or did you study?", type: 'text', placeholder: 'B.Sc. Computer Science / Dropped out but I learned more on YouTube.' },
+        { id: 'q7', label: 'My Next Move', text: "The next thing you're probably doing:", type: 'choice', options: ['Doomscrolling on TikTok', 'Going to the gym', 'Grinding on a side project', 'Trying to sleep before 2 AM'] },
+        { id: 'q8', label: 'My Hate-Use App', text: "The social media platform you hate-use the most is:", type: 'choice', options: ['X', 'Instagram', 'LinkedIn', 'Reddit'] },
+        { id: 'q9', label: 'A Quick Hot-Take', text: "A quick, unsolicited life hot-take or advice for the person reading this:", type: 'textarea', placeholder: 'The hot-take that you think is definitely right...' }
+    ];
+
+    let currentQuestionIndex = 0;
+    const userAnswers = {};
+    const TOTAL_QUESTIONS = questions.length;
+
+    // --- DOM References (Unchanged) ---
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const backQuestionBtn = document.getElementById('back-question-btn');
+    const questionTextEl = document.getElementById('question-text');
+    const answerAreaEl = document.getElementById('answer-area');
+    const progressFillEl = document.getElementById('progress-fill');
+    const timerTextEl = document.getElementById('timer-text');
+    const cardPreviewContainer = document.getElementById('card-preview-container');
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    const downloadCardBtn = document.getElementById('download-card-btn');
+    const successScreen = document.getElementById('success-screen');
+
+    // --- Core Functions ---
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            if (screen.id === id) {
+                 screen.classList.add('active');
+            } else {
+                 screen.classList.remove('active');
+            }
+        });
+        window.scrollTo(0, 0); 
+    }
+
+    function updateProgressBar(currentStep) {
+        const percentage = (currentStep / TOTAL_QUESTIONS) * 100;
+        progressFillEl.style.width = `${percentage}%`;
+    }
+
+    function saveAnswer() {
+        const q = questions[currentQuestionIndex];
+        let answer = '';
+
+        if (q.type === 'text' || q.type === 'textarea') {
+            const input = document.getElementById(q.id);
+            if (input) answer = input.value.trim();
+        } else if (q.type === 'choice') {
+            const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+            answer = checked ? checked.value : '';
+        }
+
+        if (answer) {
+            userAnswers[q.id] = answer;
+        } else {
+            delete userAnswers[q.id];
+        }
+    }
+
+    function checkInput() {
+        const q = questions[currentQuestionIndex];
+        let value = '';
+        
+        if (q.type === 'text' || q.type === 'textarea') {
+            const input = document.getElementById(q.id);
+            if (input) value = input.value.trim();
+        } else if (q.type === 'choice') {
+            const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+            value = checked ? checked.value : '';
+        }
+        
+        const isAnswered = value.length > 0 || !!userAnswers[q.id];
+        nextQuestionBtn.disabled = !isAnswered;
+        return isAnswered; 
+    }
+    
+    let autoSaveTimeout;
+    
+    function handleEnterKeyForText(e) {
+        if (e.key === 'Enter') {
+            if (checkInput() && !nextQuestionBtn.disabled) {
+                e.preventDefault(); 
+                nextQuestionBtn.click(); 
+            }
+        }
+    }
+
+    function setupAutoSave() {
+        const q = questions[currentQuestionIndex];
+        const inputElement = document.getElementById(q.id);
+        
+        if (inputElement) {
+            const inputHandler = () => {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    saveAnswer(); 
+                }, 500); 
+                checkInput(); 
+            };
+            
+            inputElement.removeEventListener('input', inputHandler); 
+            inputElement.removeEventListener('keyup', handleEnterKeyForText);
+            
+            inputElement.addEventListener('input', inputHandler);
+            inputElement.addEventListener('keyup', handleEnterKeyForText); 
+            
+            inputElement.focus();
+        }
+    }
+
+    // --- Question Flow Logic ---
+
+    function loadQuestion(index) {
+        const q = questions[index];
+        questionTextEl.innerHTML = `Q${index + 1}/${TOTAL_QUESTIONS}: ${q.text}`;
+        timerTextEl.textContent = `BeforeYouAsk • Question ${index + 1} of ${TOTAL_QUESTIONS}`;
+        updateProgressBar(index + 1);
+        
+        answerAreaEl.innerHTML = '';
+        nextQuestionBtn.innerHTML = (index === TOTAL_QUESTIONS - 1) ? 'FINALISE CONTEXT →' : 'Next →';
+        backQuestionBtn.disabled = (index === 0);
+
+        // Dynamic Input/Choice Rendering
+        if (q.type === 'text' || q.type === 'textarea') {
+            const tagName = q.type === 'text' ? 'input' : 'textarea';
+            const inputElement = document.createElement(tagName);
+            inputElement.type = q.type === 'text' ? 'text' : null;
+            inputElement.id = q.id;
+            inputElement.placeholder = q.placeholder;
+            
+            inputElement.value = userAnswers[q.id] || ''; 
+            
+            if (q.type === 'text') {
+                inputElement.setAttribute('inputmode', 'text');
+            }
+            
+            answerAreaEl.appendChild(inputElement);
+        } else if (q.type === 'choice') {
+            const choiceDiv = document.createElement('div');
+            choiceDiv.className = 'choice-options';
+            q.options.forEach((option) => {
+                const label = document.createElement('label');
+                
+                const radioId = `${q.id}-${option.replace(/\s/g, '-')}`; 
+                
+                label.innerHTML = `
+                    <input type="radio" id="${radioId}" name="${q.id}" value="${option}">
+                    <span>${option}</span>
+                `;
+                const radio = label.querySelector('input');
+                
+                radio.checked = userAnswers[q.id] === option;
+                
+                radio.addEventListener('change', () => {
+                    if (radio.checked) {
+                        userAnswers[q.id] = radio.value; 
+                    }
+                    checkInput(); 
+                });
+                choiceDiv.appendChild(label);
+            });
+            answerAreaEl.appendChild(choiceDiv);
+        }
+        
+        checkInput();
+        if (q.type !== 'choice') {
+            setupAutoSave();
+        }
+    }
+
+    // --- Final Card Logic ---
+
+    function generateCardPreview() {
+        cardPreviewContainer.innerHTML = ''; 
+
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }).replace(' ', '');
+        const dateString = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        let cardHtml = `
+            <div class="card-header-top">
+                CONTEXT LINK GENERATED ${dateString} ${timeString}
+            </div> 
+            <div class="card-title-main">BeforeYouAsk.</div>
+            <div style="flex-grow: 1; overflow-y: auto;">
+        `;
+        
+        questions.forEach(q => {
+            const rawAnswer = userAnswers[q.id] ? userAnswers[q.id].trim() : '';
+            
+            const displayAnswer = rawAnswer.length > 0 ? rawAnswer : '— Skipped / Top Secret —'; 
+            
+            cardHtml += `
+                <div class="card-item">
+                    <strong>${q.label}</strong>
+                    <span>${displayAnswer}</span>
+                </div>
+            `;
+        });
+
+        cardHtml += `</div>
+            <div class="card-footer-timestamp">
+                @BeforeYouAsk | The Instant Context
+            </div>
+        `;
+        
+        cardPreviewContainer.innerHTML = cardHtml;
+    }
+
+    function showFinalCard() {
+        showScreen('success-screen');
+        setTimeout(() => {
+            showScreen('final-card-screen');
+            generateCardPreview();
+        }, 800); 
+    }
+
+    // --- Event Listeners ---
+
+    startQuizBtn.addEventListener('click', () => {
+        currentQuestionIndex = 0;
+        showScreen('question-screen');
+        loadQuestion(currentQuestionIndex);
+    });
+
+    nextQuestionBtn.addEventListener('click', () => {
+        saveAnswer(); 
+        
+        if (currentQuestionIndex < TOTAL_QUESTIONS - 1) {
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        } else {
+            showFinalCard();
+        }
+    });
+    
+    backQuestionBtn.addEventListener('click', () => {
+        saveAnswer(); 
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion(currentQuestionIndex);
+        } else {
+            showScreen('intro-screen');
+        }
+    });
+
+    copyLinkBtn.addEventListener('click', () => {
+        const encodedAnswers = btoa(JSON.stringify(userAnswers));
+        const baseUrl = window.location.href.split('#')[0].replace('file:///', 'https://your-domain.com/');
+        const shareURL = baseUrl + `#data=${encodedAnswers}`;
+        
+        navigator.clipboard.writeText(shareURL)
+            .then(() => {
+                copyLinkBtn.textContent = 'LINK COPIED! ✅';
+                setTimeout(() => {
+                    copyLinkBtn.textContent = 'Copy Confidence Link 🔗';
+                }, 2000);
+            })
+            .catch(err => {
+                alert(`Error copying link. Please manually copy this text: ${shareURL}`);
+            });
+    });
+
+    downloadCardBtn.addEventListener('click', () => {
+        downloadCardBtn.disabled = true;
+        downloadCardBtn.textContent = 'Processing...';
+
+        const card = document.getElementById('card-preview-container');
+
+        setTimeout(() => {
+            html2canvas(card, {
+                scale: 2, 
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                const imageURL = canvas.toDataURL("image/png");
+                
+                const a = document.createElement('a');
+                a.href = imageURL;
+                a.download = 'BeforeYouAsk_ContextCard.png';
+                document.body.appendChild(a); 
+                a.click(); 
+                document.body.removeChild(a); 
+                
+                downloadCardBtn.textContent = 'Download Attempted ✅';
+                
+                setTimeout(() => {
+                    downloadCardBtn.disabled = false;
+                    downloadCardBtn.textContent = 'Download Intro Image ⬇️';
+                }, 3000);
+            }).catch(error => {
+                console.error('Error generating card image:', error);
+                alert('Could not download image. Please use the screenshot or long-press method.');
+                downloadCardBtn.disabled = false;
+                downloadCardBtn.textContent = 'Download Intro Image ⬇️';
+            });
+        }, 100); 
+    });
+
+    // --- GLOBAL ENTER KEY HANDLER FOR CHOICE QUESTIONS (Unchanged) ---
+    document.addEventListener('keyup', (e) => {
+        if (document.getElementById('question-screen').classList.contains('active')) {
+            
+            const q = questions[currentQuestionIndex];
+            
+            if (q.type === 'choice' && e.key === 'Enter') {
+                if (!nextQuestionBtn.disabled) {
+                    e.preventDefault(); 
+                    nextQuestionBtn.click();
+                }
+            }
+        }
+    });
+    // ------------------------------------------
+
+    // --- Initialization (Unchanged) ---
+
+    function loadDataFromUrl() {
+        const hash = window.location.hash.substring(1);
+        const dataParam = hash.startsWith('data=') ? hash.substring(5) : null;
+
+        if (dataParam) {
+            try {
+                const decodedAnswers = JSON.parse(atob(dataParam));
+                Object.assign(userAnswers, decodedAnswers);
+                showFinalCard();
+                return true;
+            } catch (e) {
+                console.error("Failed to decode URL data:", e);
+            }
+        }
+        return false;
+    }
+    
+    function initializeApp() {
+        if (!loadDataFromUrl()) {
+            showScreen('intro-screen');
+        }
+    }
+
+    initializeApp();
+
+</script>
+
+</body>
+</html>
