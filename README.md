@@ -99,6 +99,7 @@ Want to run it locally or host it yourself?
 ```bash
 git clone https://github.com/sanidhya2506/BeforeYouAsk.git
 Open `index.html` in any modern browser.
+```
 
 That’s it.  
 Fully client-side. No build steps. No dependencies.
